@@ -26,8 +26,8 @@ public class SessaoVotacaoController {
 
         SessaoVotacaoResponse sessao = sessaoService.abrir(pautaId, request);
 
-        URI location = URI.create("/api/v1/pautas/%d/sessoes/%d" .formatted(pautaId, sessao.id()));
+        URI uri = URI.create("/api/v1/pautas/%d/sessoes/%d" .formatted(pautaId, sessao.id()));
 
-        return ResponseEntity.created(location).body(sessao);
+        return ResponseEntity.created(uri).body(sessao);
     }
 }

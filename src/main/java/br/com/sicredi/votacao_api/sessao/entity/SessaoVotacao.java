@@ -23,6 +23,11 @@ public class SessaoVotacao {
     @Column(nullable = false)
     private OffsetDateTime fim;
 
+    public boolean estaAbertaEm(OffsetDateTime instante) {
+        return !instante.isBefore(inicio)
+                && instante.isBefore(fim);
+    }
+
     protected SessaoVotacao() {
     }
 
