@@ -9,11 +9,15 @@ import br.com.sicredi.votacao_api.voto.exception.SessaoNaoEncontradaException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.Clock;
 import java.time.OffsetDateTime;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 
 @RestControllerAdvice
@@ -85,6 +89,50 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiError> handleValidation(
+    MethodArgumentNotValidException exception,
+    HttpServletRequest request) {
+
+        Map<String, String> fields = new LinkedHashMap<>();
+
+        exception.getBindingResult()
+                .getFieldErrors()
+                .forEach(error ->
+                        fields.put(
+                                error.getField(),
+                                error.getDefaultMessage()
+                        )
+                );
+
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+
+        ApiError error = new ApiError(
+                OffsetDateTime.now(clock),
+                status.value(),
+                status.getReasonPhrase(),
+                "Dados inválidos",
+                request.getRequestURI(),
+                fields
+        );
+
+        return ResponseEntity
+                .status(status)
+                .body(error);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiError> handleMessageNotReadable(
+            HttpMessageNotReadableException exception,
+            HttpServletRequest request) {
+
+        return buildError(
+                HttpStatus.BAD_REQUEST,
+                "Corpo da requisição inválido",
+                request
+        );
+    }
+
     private ResponseEntity<ApiError> buildError(
             HttpStatus status,
             String message,
@@ -95,7 +143,8 @@ public class GlobalExceptionHandler {
                 status.value(),
                 status.getReasonPhrase(),
                 message,
-                request.getRequestURI()
+                request.getRequestURI(),
+                null
         );
 
         return ResponseEntity

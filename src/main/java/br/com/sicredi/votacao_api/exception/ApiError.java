@@ -1,12 +1,17 @@
 package br.com.sicredi.votacao_api.exception;
 
-import java.time.OffsetDateTime;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
+import java.time.OffsetDateTime;
+import java.util.Map;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public record ApiError(
         OffsetDateTime timestamp,
         int status,
         String error,
         String message,
-        String path
+        String path,
+        Map<String, String> fields
 ) {
 }
