@@ -1,0 +1,7 @@
+info:
+  name: Pauta
+  type: folder
+  seq: 1
+
+request:
+  auth: inherit

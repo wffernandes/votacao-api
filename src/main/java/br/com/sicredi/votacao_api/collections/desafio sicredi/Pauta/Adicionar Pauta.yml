@@ -1,0 +1,22 @@
+info:
+  name: Adicionar Pauta
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:8080//api/v1/pautas
+  body:
+    type: json
+    data: |-
+      {
+        "titulo": "Aquisição de novos equipamentos",
+        "descricao": "Votação para aquisição de equipamentos para a cooperativa."
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
