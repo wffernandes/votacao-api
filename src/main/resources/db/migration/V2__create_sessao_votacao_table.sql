@@ -1,0 +1,16 @@
+CREATE TABLE sessao_votacao (
+    id BIGSERIAL PRIMARY KEY,
+    pauta_id BIGINT NOT NULL,
+    inicio TIMESTAMP WITH TIME ZONE NOT NULL,
+    fim TIMESTAMP WITH TIME ZONE NOT NULL,
+
+    CONSTRAINT fk_sessao_votacao_pauta
+        FOREIGN KEY (pauta_id)
+        REFERENCES pauta(id),
+
+    CONSTRAINT uk_sessao_votacao_pauta
+        UNIQUE (pauta_id),
+
+    CONSTRAINT ck_sessao_votacao_periodo
+        CHECK (fim > inicio)
+);

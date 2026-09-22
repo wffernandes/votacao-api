@@ -3,19 +3,27 @@ package br.com.sicredi.votacao_api.pauta.service;
 import br.com.sicredi.votacao_api.pauta.dto.CriarPautaRequest;
 import br.com.sicredi.votacao_api.pauta.dto.PautaResponse;
 import br.com.sicredi.votacao_api.pauta.entity.Pauta;
+import br.com.sicredi.votacao_api.pauta.mapper.PautaMapper;
 import br.com.sicredi.votacao_api.pauta.repository.PautaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.time.OffsetDateTime;
 
 @Service
 public class PautaService {
 
     private final PautaRepository pautaRepository;
+    private final PautaMapper pautaMapper;
+    private final Clock clock;
 
-    public PautaService(PautaRepository pautaRepository) {
+    public PautaService(PautaRepository pautaRepository,
+                        PautaMapper pautaMapper,
+                        Clock clock) {
         this.pautaRepository = pautaRepository;
+        this.pautaMapper = pautaMapper;
+        this.clock = clock;
     }
 
     @Transactional
@@ -23,20 +31,11 @@ public class PautaService {
         Pauta pauta = new Pauta(
                 request.titulo().trim(),
                 normalizarDescricao(request.descricao()),
-                OffsetDateTime.now()
+                OffsetDateTime.now(clock)
         );
         Pauta pautaSalva = pautaRepository.save(pauta);
 
-        return toResponse(pautaSalva);
-    }
-
-    private PautaResponse toResponse(Pauta pauta) {
-        return new PautaResponse(
-                pauta.getId(),
-                pauta.getTitulo(),
-                pauta.getDescricao(),
-                pauta.getCriadaEm()
-        );
+        return pautaMapper.toResponse(pautaSalva);
     }
 
     private String normalizarDescricao(String descricao) {
