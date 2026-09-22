@@ -19,3 +19,14 @@ de uma cooperativa.
 - Java 21
 - Maven
 - PostgreSQL
+
+## Decisões de domínio
+
+### Sessão de votação
+
+Cada pauta pode possuir apenas uma sessão de votação.
+
+Quando a duração não é informada na abertura, a sessão
+permanece aberta por 1 minuto.
+
+Os timestamps da aplicação são tratados em UTC.
