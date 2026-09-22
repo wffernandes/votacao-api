@@ -4,6 +4,7 @@ package br.com.sicredi.votacao_api.exception;
 import br.com.sicredi.votacao_api.sessao.exception.PautaNaoEncontradaException;
 import br.com.sicredi.votacao_api.sessao.exception.SessaoJaExistenteException;
 import br.com.sicredi.votacao_api.voto.exception.AssociadoJaVotouException;
+import br.com.sicredi.votacao_api.voto.exception.ResultadoAindaIndisponivelException;
 import br.com.sicredi.votacao_api.voto.exception.SessaoFechadaException;
 import br.com.sicredi.votacao_api.voto.exception.SessaoNaoEncontradaException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -129,6 +130,18 @@ public class GlobalExceptionHandler {
         return buildError(
                 HttpStatus.BAD_REQUEST,
                 "Corpo da requisição inválido",
+                request
+        );
+    }
+
+    @ExceptionHandler(ResultadoAindaIndisponivelException.class)
+    public ResponseEntity<ApiError> handleResultadoAindaIndisponivel(
+            ResultadoAindaIndisponivelException exception,
+            HttpServletRequest request) {
+
+        return buildError(
+                HttpStatus.UNPROCESSABLE_CONTENT,
+                exception.getMessage(),
                 request
         );
     }

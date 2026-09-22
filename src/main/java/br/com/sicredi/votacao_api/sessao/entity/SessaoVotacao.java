@@ -28,6 +28,10 @@ public class SessaoVotacao {
                 && instante.isBefore(fim);
     }
 
+    public boolean estaEncerradaEm(OffsetDateTime instante) {
+        return !instante.isBefore(fim);
+    }
+
     protected SessaoVotacao() {
     }
 

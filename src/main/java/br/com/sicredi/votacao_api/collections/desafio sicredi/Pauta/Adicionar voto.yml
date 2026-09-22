@@ -5,12 +5,12 @@ info:
 
 http:
   method: POST
-  url: http://localhost:8080/api/v1/pautas/3/votos
+  url: http://localhost:8080/api/v1/pautas/4/votos
   body:
     type: json
     data: |-
       {
-        "associadoId": "ASSOC-003",
+        "associadoId": "ASSOC-004",
         "opcao": "NAO"
       }
   auth: inherit

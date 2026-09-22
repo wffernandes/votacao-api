@@ -47,3 +47,21 @@ unicidade é garantida no banco pela combinação:
 A sessão utiliza o intervalo temporal `[inicio, fim)`.
 Portanto, no instante exato definido por `fim`, a sessão
 já é considerada encerrada.
+
+### Resultado da votação
+
+O resultado final somente pode ser consultado após o
+encerramento da sessão.
+
+A contabilização dos votos é realizada diretamente no banco
+de dados, evitando carregar todos os votos em memória.
+
+Critérios:
+
+- SIM > NAO: APROVADA
+- NAO > SIM: REJEITADA
+- SIM = NAO: EMPATE
+
+Uma votação encerrada sem votos também é considerada EMPATE,
+pois o requisito não define um estado específico para ausência
+de votos.
