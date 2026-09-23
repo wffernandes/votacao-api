@@ -15,7 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Import(ControlledClockConfig.class)
-class ResultadoIntegracaoTest extends AbstractIntegracaoTest {
+class ResultadoIntegracaoTest extends AbstractVotacaoIntegracaoTest {
 
     private static final Instant INSTANTE_INICIAL =
             Instant.parse("2026-09-23T10:00:00Z");

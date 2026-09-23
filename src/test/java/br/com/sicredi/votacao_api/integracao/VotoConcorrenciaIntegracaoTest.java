@@ -9,7 +9,7 @@ import java.util.concurrent.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class VotoConcorrenciaIntegracaoTest extends AbstractIntegracaoTest {
+class VotoConcorrenciaIntegracaoTest extends AbstractVotacaoIntegracaoTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

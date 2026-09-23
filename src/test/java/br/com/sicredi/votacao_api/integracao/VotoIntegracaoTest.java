@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class VotoIntegracaoTest extends AbstractIntegracaoTest {
+class VotoIntegracaoTest extends AbstractVotacaoIntegracaoTest  {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

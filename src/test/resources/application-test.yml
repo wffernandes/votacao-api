@@ -10,3 +10,8 @@ spring:
   web:
     error:
       include-stacktrace: never
+
+integracao:
+  elegibilidade:
+    base-url: http://localhost:9999
+    timeout-segundos: 3

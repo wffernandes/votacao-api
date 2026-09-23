@@ -1,5 +1,6 @@
 package br.com.sicredi.votacao_api.voto.service;
 
+import br.com.sicredi.votacao_api.integracao.elegibilidade.exception.service.ElegibilidadeAssociadoService;
 import br.com.sicredi.votacao_api.pauta.repository.PautaRepository;
 import br.com.sicredi.votacao_api.sessao.entity.SessaoVotacao;
 import br.com.sicredi.votacao_api.sessao.exception.PautaNaoEncontradaException;
@@ -53,6 +54,9 @@ class VotoServiceTest {
     @Mock
     private VotoDuplicadoConstraintDetector constraintDetector;
 
+    @Mock
+    ElegibilidadeAssociadoService elegibilidadeService;
+
     private VotoService votoService;
 
     private final Clock clock = Clock.fixed(
@@ -69,7 +73,8 @@ class VotoServiceTest {
                 votoRepository,
                 votoMapper,
                 clock,
-                constraintDetector
+                constraintDetector,
+                elegibilidadeService
         );
     }
 
