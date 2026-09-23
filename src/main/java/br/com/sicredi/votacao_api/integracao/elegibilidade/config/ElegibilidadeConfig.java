@@ -12,9 +12,7 @@ import java.time.Duration;
 public class ElegibilidadeConfig {
 
     @Bean
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     public RestClient elegibilidadeRestClient(
-            RestClient.Builder builder,
             @Value("${integracao.elegibilidade.base-url}")
             String baseUrl,
             @Value("${integracao.elegibilidade.timeout-segundos}")
@@ -22,12 +20,13 @@ public class ElegibilidadeConfig {
 
         Duration timeout = Duration.ofSeconds(timeoutSegundos);
 
-        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        SimpleClientHttpRequestFactory factory =
+                new SimpleClientHttpRequestFactory();
 
         factory.setConnectTimeout(timeout);
         factory.setReadTimeout(timeout);
 
-        return builder
+        return RestClient.builder()
                 .baseUrl(baseUrl)
                 .requestFactory(factory)
                 .build();
