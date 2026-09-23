@@ -10,6 +10,7 @@ import br.com.sicredi.votacao_api.voto.entity.Voto;
 import br.com.sicredi.votacao_api.voto.exception.AssociadoJaVotouException;
 import br.com.sicredi.votacao_api.voto.exception.SessaoFechadaException;
 import br.com.sicredi.votacao_api.voto.exception.SessaoNaoEncontradaException;
+import br.com.sicredi.votacao_api.voto.exception.VotoDuplicadoConstraintDetector;
 import br.com.sicredi.votacao_api.voto.mapper.VotoMapper;
 import br.com.sicredi.votacao_api.voto.repository.VotoRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -48,6 +50,9 @@ class VotoServiceTest {
     @Mock
     private VotoMapper votoMapper;
 
+    @Mock
+    private VotoDuplicadoConstraintDetector constraintDetector;
+
     private VotoService votoService;
 
     private final Clock clock = Clock.fixed(
@@ -63,7 +68,8 @@ class VotoServiceTest {
                 sessaoRepository,
                 votoRepository,
                 votoMapper,
-                clock
+                clock,
+                constraintDetector
         );
     }
 
@@ -75,7 +81,7 @@ class VotoServiceTest {
         when(sessao.getId()).thenReturn(10L);
         when(sessao.estaAbertaEm(any(OffsetDateTime.class))).thenReturn(true);
         when(votoRepository.existsBySessaoIdAndAssociadoId(10L,"ASSOC-001")).thenReturn(false);
-        when(votoRepository.save(any(Voto.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(votoRepository.saveAndFlush(any(Voto.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         RegistrarVotoRequest request = new RegistrarVotoRequest("ASSOC-001", OpcaoVoto.SIM);
 
@@ -83,13 +89,13 @@ class VotoServiceTest {
 
         ArgumentCaptor<Voto> argumentCaptor = ArgumentCaptor.forClass(Voto.class);
 
-        verify(votoRepository).save(argumentCaptor.capture());
+        verify(votoRepository).saveAndFlush(argumentCaptor.capture());
 
         Voto voto = argumentCaptor.getValue();
 
         assertThat(voto.getAssociadoId()).isEqualTo("ASSOC-001");
         assertThat(voto.getOpcao()).isEqualTo(OpcaoVoto.SIM);
-        assertThat(voto.getVotadoEm()).isEqualTo("2026-09-22T15:00:00Z");
+        assertThat(voto.getVotadoEm()).isEqualTo(OffsetDateTime.parse("2026-09-22T15:00:00Z"));
     }
 
     @Test
@@ -150,5 +156,28 @@ class VotoServiceTest {
                 .isInstanceOf(SessaoNaoEncontradaException.class);
 
         verify(votoRepository, never()).save(any());
+    }
+
+    @Test
+    void deveConverterViolacaoDeVotoDuplicadoEmExcecaoDeNegocio() {
+
+        when(pautaRepository.existsById(1L)).thenReturn(true);
+        when(sessaoRepository.findByPautaId(1L)).thenReturn(Optional.of(sessao));
+        when(sessao.getId()).thenReturn(10L);
+        when(sessao.estaAbertaEm(any())).thenReturn(true);
+        when(votoRepository.existsBySessaoIdAndAssociadoId(10L, "ASSOC-001")).thenReturn(false);
+
+        DataIntegrityViolationException erro =
+                new DataIntegrityViolationException(
+                        "Violação de constraint"
+                );
+
+        when(votoRepository.saveAndFlush(any(Voto.class))).thenThrow(erro);
+        when(constraintDetector.isVotoDuplicado(erro)).thenReturn(true);
+
+        RegistrarVotoRequest request = new RegistrarVotoRequest("ASSOC-001", OpcaoVoto.SIM);
+
+        assertThatThrownBy(() -> votoService.registrar(1L, request))
+                .isInstanceOf(AssociadoJaVotouException.class);
     }
 }
