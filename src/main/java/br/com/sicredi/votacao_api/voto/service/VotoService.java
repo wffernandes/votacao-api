@@ -1,5 +1,6 @@
 package br.com.sicredi.votacao_api.voto.service;
 
+import br.com.sicredi.votacao_api.integracao.elegibilidade.exception.service.ElegibilidadeAssociadoService;
 import br.com.sicredi.votacao_api.pauta.repository.PautaRepository;
 import br.com.sicredi.votacao_api.sessao.entity.SessaoVotacao;
 import br.com.sicredi.votacao_api.sessao.exception.PautaNaoEncontradaException;
@@ -29,47 +30,60 @@ public class VotoService {
     private final VotoMapper votoMapper;
     private final Clock clock;
     private final VotoDuplicadoConstraintDetector constraintDetector;
+    private final ElegibilidadeAssociadoService elegibilidadeService;
 
     public VotoService(PautaRepository pautaRepository,
                        SessaoVotacaoRepository sessaoRepository,
                        VotoRepository votoRepository,
                        VotoMapper votoMapper,
                        Clock clock,
-                       VotoDuplicadoConstraintDetector constraintDetector) {
+                       VotoDuplicadoConstraintDetector constraintDetector,
+                       ElegibilidadeAssociadoService elegibilidadeService) {
         this.pautaRepository = pautaRepository;
         this.sessaoRepository = sessaoRepository;
         this.votoRepository = votoRepository;
         this.votoMapper = votoMapper;
         this.clock = clock;
         this.constraintDetector = constraintDetector;
+        this.elegibilidadeService = elegibilidadeService;
     }
 
     @Transactional
     public VotoResponse registrar(Long pautaId, RegistrarVotoRequest request) {
 
+        // 1. Verifica se a pauta existe.
         if (!pautaRepository.existsById(pautaId)) {
             throw new PautaNaoEncontradaException(pautaId);
         }
 
+        // 2. Recupera a sessão vinculada à pauta.
         SessaoVotacao sessao =
                 sessaoRepository.findByPautaId(pautaId)
                         .orElseThrow(() ->
                                 new SessaoNaoEncontradaException(pautaId));
 
+        // 3. Verifica se a sessão está aberta.
         OffsetDateTime agora = OffsetDateTime.now(clock);
 
         if (!sessao.estaAbertaEm(agora)) {
             throw new SessaoFechadaException(pautaId);
         }
 
+        // 4. Normaliza o identificador do associado.
         String associadoId = request.associadoId().trim();
 
+        // 5. Verifica se o associado já votou.
         if (votoRepository.existsBySessaoIdAndAssociadoId(sessao.getId(),associadoId)) {
             throw new AssociadoJaVotouException(pautaId, associadoId);
         }
 
+        // 6. Consultar elegibilidade do associado
+        elegibilidadeService.validar(associadoId);
+
+        // 7. Cria a entidade Voto.
         Voto voto = new Voto(sessao, associadoId, request.opcao(), agora);
 
+        // 8. Persiste e trata possíveis votos concorrentes.
         try {
             Voto votoSalvo = votoRepository.saveAndFlush(voto);
 

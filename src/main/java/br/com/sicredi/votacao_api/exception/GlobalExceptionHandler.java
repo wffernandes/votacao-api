@@ -1,6 +1,9 @@
 package br.com.sicredi.votacao_api.exception;
 
 
+import br.com.sicredi.votacao_api.integracao.elegibilidade.exception.AssociadoNaoHabilitadoException;
+import br.com.sicredi.votacao_api.integracao.elegibilidade.exception.CpfInvalidoException;
+import br.com.sicredi.votacao_api.integracao.elegibilidade.exception.ServicoElegibilidadeIndisponivelException;
 import br.com.sicredi.votacao_api.sessao.exception.PautaNaoEncontradaException;
 import br.com.sicredi.votacao_api.sessao.exception.SessaoJaExistenteException;
 import br.com.sicredi.votacao_api.voto.exception.AssociadoJaVotouException;
@@ -141,6 +144,42 @@ public class GlobalExceptionHandler {
 
         return buildError(
                 HttpStatus.UNPROCESSABLE_CONTENT,
+                exception.getMessage(),
+                request
+        );
+    }
+
+    @ExceptionHandler(CpfInvalidoException.class)
+    public ResponseEntity<ApiError> handleCpfInvalido(
+            CpfInvalidoException exception,
+            HttpServletRequest request) {
+
+        return buildError(
+                HttpStatus.NOT_FOUND,
+                exception.getMessage(),
+                request
+        );
+    }
+
+    @ExceptionHandler(AssociadoNaoHabilitadoException.class)
+    public ResponseEntity<ApiError> handleAssociadoNaoHabilitado(
+            AssociadoNaoHabilitadoException exception,
+            HttpServletRequest request) {
+
+        return buildError(
+                HttpStatus.UNPROCESSABLE_CONTENT,
+                exception.getMessage(),
+                request
+        );
+    }
+
+    @ExceptionHandler(ServicoElegibilidadeIndisponivelException.class)
+    public ResponseEntity<ApiError> handleServicoIndisponivel(
+            ServicoElegibilidadeIndisponivelException exception,
+            HttpServletRequest request) {
+
+        return buildError(
+                HttpStatus.SERVICE_UNAVAILABLE,
                 exception.getMessage(),
                 request
         );
