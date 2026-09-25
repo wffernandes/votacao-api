@@ -1,6 +1,7 @@
 package br.com.sicredi.votacao_api.voto.service;
 
 import br.com.sicredi.votacao_api.pauta.repository.PautaRepository;
+import br.com.sicredi.votacao_api.resultado.mapper.ResultadoVotacaoMapper;
 import br.com.sicredi.votacao_api.sessao.entity.SessaoVotacao;
 import br.com.sicredi.votacao_api.sessao.exception.PautaNaoEncontradaException;
 import br.com.sicredi.votacao_api.sessao.repository.SessaoVotacaoRepository;
@@ -24,12 +25,15 @@ public class ResultadoVotacaoService {
     private final SessaoVotacaoRepository sessaoRepository;
     private final VotoRepository votoRepository;
     private final Clock clock;
+    private final ResultadoVotacaoMapper resultadoVotacaoMapper;
 
-    public ResultadoVotacaoService(PautaRepository pautaRepository, SessaoVotacaoRepository sessaoRepository, VotoRepository votoRepository, Clock clock) {
+    public ResultadoVotacaoService(PautaRepository pautaRepository, SessaoVotacaoRepository sessaoRepository,
+                                   VotoRepository votoRepository, Clock clock, ResultadoVotacaoMapper resultadoVotacaoMapper) {
         this.pautaRepository = pautaRepository;
         this.sessaoRepository = sessaoRepository;
         this.votoRepository = votoRepository;
         this.clock = clock;
+        this.resultadoVotacaoMapper = resultadoVotacaoMapper;
     }
 
     @Transactional(readOnly = true)
@@ -64,7 +68,7 @@ public class ResultadoVotacaoService {
 
         ResultadoVotacao resultado = determinarResultado(totalSim, totalNao);
 
-        return new ResultadoVotacaoResponse(
+        return resultadoVotacaoMapper.toResponse(
                 pautaId,
                 totalVotos,
                 totalSim,

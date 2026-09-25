@@ -120,4 +120,24 @@ class SessaoVotacaoServiceTest {
 
         verify(sessaoRepository, never()).save(any());
     }
+
+    @Test
+    void deveConsiderarSessaoEncerradaAposOFim() {
+        OffsetDateTime inicio = OffsetDateTime.parse("2026-09-25T12:00:00Z");
+        OffsetDateTime fim = OffsetDateTime.parse("2026-09-25T12:05:00Z");
+        SessaoVotacao sessao = new SessaoVotacao(null, inicio, fim);
+        OffsetDateTime aposOFim = OffsetDateTime.parse("2026-09-25T12:05:01Z");
+
+        assertThat(sessao.estaAbertaEm(aposOFim)).isFalse();
+    }
+
+    @Test
+    void deveConsiderarSessaoFechadaAntesDoInicio() {
+        OffsetDateTime inicio = OffsetDateTime.parse("2026-09-25T12:00:00Z");
+        OffsetDateTime fim = OffsetDateTime.parse("2026-09-25T12:05:00Z");
+        SessaoVotacao sessao = new SessaoVotacao(null, inicio, fim);
+        OffsetDateTime antesDoInicio = OffsetDateTime.parse("2026-09-25T11:59:59Z");
+
+        assertThat(sessao.estaAbertaEm(antesDoInicio)).isFalse();
+    }
 }

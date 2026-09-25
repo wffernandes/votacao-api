@@ -182,4 +182,24 @@ class ElegibilidadeClienteTest {
         assertThatThrownBy(() -> cliente.consultar(CPF))
                 .isInstanceOf(ServicoElegibilidadeIndisponivelException.class);
     }
+
+    @Test
+    void deveTratarRespostaSemCorpo() {
+
+        wireMockServer.stubFor(
+                get(urlEqualTo("/users/" + CPF))
+                        .willReturn(
+                                aResponse()
+                                        .withStatus(200)
+                                        .withHeader(
+                                                "Content-Type",
+                                                "application/json"
+                                        )
+                        )
+        );
+
+        assertThatThrownBy(() -> cliente.consultar(CPF)).isInstanceOf(ServicoElegibilidadeIndisponivelException.class);
+
+        wireMockServer.verify(1,getRequestedFor(urlEqualTo("/users/" + CPF))        );
+    }
 }

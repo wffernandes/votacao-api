@@ -1,6 +1,7 @@
 package br.com.sicredi.votacao_api.voto.service;
 
 import br.com.sicredi.votacao_api.pauta.repository.PautaRepository;
+import br.com.sicredi.votacao_api.resultado.mapper.ResultadoVotacaoMapper;
 import br.com.sicredi.votacao_api.sessao.entity.SessaoVotacao;
 import br.com.sicredi.votacao_api.sessao.repository.SessaoVotacaoRepository;
 import br.com.sicredi.votacao_api.voto.dto.ResultadoVotacaoResponse;
@@ -54,11 +55,14 @@ class ResultadoVotacaoServiceTest {
     @BeforeEach
     void setUp() {
 
+        ResultadoVotacaoMapper resultadoVotacaoMapper = new ResultadoVotacaoMapper();
+
         service = new ResultadoVotacaoService(
                 pautaRepository,
                 sessaoRepository,
                 votoRepository,
-                clock
+                clock,
+                resultadoVotacaoMapper
         );
     }
 
@@ -69,7 +73,7 @@ class ResultadoVotacaoServiceTest {
         when(sessaoRepository.findByPautaId(1L)).thenReturn(Optional.of(sessao));
         when(sessao.getId()).thenReturn(10L);
         when(sessao.estaEncerradaEm(any())).thenReturn(true);
-        when(votoRepository.contarVotosPorSessao(10L, OpcaoVoto.SIM, OpcaoVoto.NAO )).thenReturn(contagem);
+        when(votoRepository.contarVotosPorSessao(10L, OpcaoVoto.SIM, OpcaoVoto.NAO)).thenReturn(contagem);
         when(contagem.getTotalSim()).thenReturn(10L);
         when(contagem.getTotalNao()).thenReturn(5L);
 
@@ -88,7 +92,7 @@ class ResultadoVotacaoServiceTest {
         when(sessaoRepository.findByPautaId(1L)).thenReturn(Optional.of(sessao));
         when(sessao.getId()).thenReturn(10L);
         when(sessao.estaEncerradaEm(any())).thenReturn(true);
-        when(votoRepository.contarVotosPorSessao(10L, OpcaoVoto.SIM, OpcaoVoto.NAO )).thenReturn(contagem);
+        when(votoRepository.contarVotosPorSessao(10L, OpcaoVoto.SIM, OpcaoVoto.NAO)).thenReturn(contagem);
         when(contagem.getTotalSim()).thenReturn(4L);
         when(contagem.getTotalNao()).thenReturn(7L);
 
@@ -107,7 +111,7 @@ class ResultadoVotacaoServiceTest {
         when(sessaoRepository.findByPautaId(1L)).thenReturn(Optional.of(sessao));
         when(sessao.getId()).thenReturn(10L);
         when(sessao.estaEncerradaEm(any())).thenReturn(true);
-        when(votoRepository.contarVotosPorSessao(10L, OpcaoVoto.SIM, OpcaoVoto.NAO )).thenReturn(contagem);
+        when(votoRepository.contarVotosPorSessao(10L, OpcaoVoto.SIM, OpcaoVoto.NAO)).thenReturn(contagem);
         when(contagem.getTotalSim()).thenReturn(5L);
         when(contagem.getTotalNao()).thenReturn(5L);
 
@@ -126,7 +130,7 @@ class ResultadoVotacaoServiceTest {
         when(sessaoRepository.findByPautaId(1L)).thenReturn(Optional.of(sessao));
         when(sessao.getId()).thenReturn(10L);
         when(sessao.estaEncerradaEm(any())).thenReturn(true);
-        when(votoRepository.contarVotosPorSessao(10L, OpcaoVoto.SIM, OpcaoVoto.NAO )).thenReturn(contagem);
+        when(votoRepository.contarVotosPorSessao(10L, OpcaoVoto.SIM, OpcaoVoto.NAO)).thenReturn(contagem);
         when(contagem.getTotalSim()).thenReturn(null);
         when(contagem.getTotalNao()).thenReturn(null);
 

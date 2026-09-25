@@ -1,17 +1,14 @@
 package br.com.sicredi.votacao_api.integracao;
 
+import br.com.sicredi.votacao_api.config.PostgresTestcontainersConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.testcontainers.postgresql.PostgreSQLContainer;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
@@ -23,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@Import(AbstractIntegracaoTest.TestcontainersConfiguration.class)
+@Import(PostgresTestcontainersConfiguration.class)
 public abstract class AbstractIntegracaoTest {
 
     @Autowired
@@ -31,21 +28,6 @@ public abstract class AbstractIntegracaoTest {
 
     @Autowired
     protected MockMvc mockMvc;
-
-    @TestConfiguration(proxyBeanMethods = false)
-    static class TestcontainersConfiguration {
-
-        @Bean(destroyMethod = "close")
-        @ServiceConnection
-        @SuppressWarnings("resource")
-        PostgreSQLContainer postgresContainer() {
-
-            return new PostgreSQLContainer("postgres:17-alpine")
-                    .withDatabaseName("votacao_test")
-                    .withUsername("test")
-                    .withPassword("test");
-        }
-    }
 
     protected Long criarPauta(String titulo) throws Exception {
 
@@ -91,7 +73,7 @@ public abstract class AbstractIntegracaoTest {
         return response.get("id").asLong();
     }
 
-    protected MvcResult registrarVoto(Long pautaId, String associadoId, String opcao ) throws Exception {
+    protected MvcResult registrarVoto(Long pautaId, String associadoId, String opcao) throws Exception {
 
         String request = objectMapper.writeValueAsString(
                 Map.of(

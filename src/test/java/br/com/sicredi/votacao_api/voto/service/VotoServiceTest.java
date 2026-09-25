@@ -185,4 +185,25 @@ class VotoServiceTest {
         assertThatThrownBy(() -> votoService.registrar(1L, request))
                 .isInstanceOf(AssociadoJaVotouException.class);
     }
+
+    @Test
+    void devePropagarDataIntegrityViolationExceptionQuandoNaoForVotoDuplicado() {
+
+        when(pautaRepository.existsById(1L)).thenReturn(true);
+        when(sessaoRepository.findByPautaId(1L)).thenReturn(Optional.of(sessao));
+        when(sessao.getId()).thenReturn(10L);
+        when(sessao.estaAbertaEm(any(OffsetDateTime.class))).thenReturn(true);
+        when(votoRepository.existsBySessaoIdAndAssociadoId(10L, "ASSOC-001")).thenReturn(false);
+
+        DataIntegrityViolationException erro = new DataIntegrityViolationException("erro de integridade");
+
+        when(votoRepository.saveAndFlush(any(Voto.class))).thenThrow(erro);
+        when(constraintDetector.isVotoDuplicado(erro)).thenReturn(false);
+
+        RegistrarVotoRequest request = new RegistrarVotoRequest("ASSOC-001", OpcaoVoto.SIM);
+
+        assertThatThrownBy(() -> votoService.registrar(1L, request)) .isSameAs(erro);
+
+        verify(constraintDetector).isVotoDuplicado(erro);
+    }
 }
