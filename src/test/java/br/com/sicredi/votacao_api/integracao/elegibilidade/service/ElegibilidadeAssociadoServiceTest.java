@@ -4,7 +4,6 @@ import br.com.sicredi.votacao_api.integracao.elegibilidade.cliente.Elegibilidade
 import br.com.sicredi.votacao_api.integracao.elegibilidade.dto.ElegibilidadeResponse;
 import br.com.sicredi.votacao_api.integracao.elegibilidade.dto.SituacaoElegibilidade;
 import br.com.sicredi.votacao_api.integracao.elegibilidade.exception.AssociadoNaoHabilitadoException;
-import br.com.sicredi.votacao_api.integracao.elegibilidade.exception.service.ElegibilidadeAssociadoService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

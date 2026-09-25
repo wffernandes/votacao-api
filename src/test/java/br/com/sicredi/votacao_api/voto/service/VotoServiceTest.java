@@ -1,6 +1,6 @@
 package br.com.sicredi.votacao_api.voto.service;
 
-import br.com.sicredi.votacao_api.integracao.elegibilidade.exception.service.ElegibilidadeAssociadoService;
+import br.com.sicredi.votacao_api.integracao.elegibilidade.service.ElegibilidadeAssociadoService;
 import br.com.sicredi.votacao_api.pauta.repository.PautaRepository;
 import br.com.sicredi.votacao_api.sessao.entity.SessaoVotacao;
 import br.com.sicredi.votacao_api.sessao.exception.PautaNaoEncontradaException;

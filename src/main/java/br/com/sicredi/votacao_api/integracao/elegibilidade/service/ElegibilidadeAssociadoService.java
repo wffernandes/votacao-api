@@ -1,4 +1,4 @@
-package br.com.sicredi.votacao_api.integracao.elegibilidade.exception.service;
+package br.com.sicredi.votacao_api.integracao.elegibilidade.service;
 
 import br.com.sicredi.votacao_api.integracao.elegibilidade.cliente.ElegibilidadeCliente;
 import br.com.sicredi.votacao_api.integracao.elegibilidade.dto.ElegibilidadeResponse;
